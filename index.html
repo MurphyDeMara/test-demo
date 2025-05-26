@@ -1,0 +1,102 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Join Our Real Estate Community</title>
+  <meta name="description" content="Join our real estate community for wholesalers and investors. Get free resources to start investing today!">
+  <meta property="og:title" content="Join Our Real Estate Community">
+  <meta property="og:description" content="Connect with wholesalers and investors, and get free resources to grow your real estate investments.">
+  <meta property="og:image" content="https://via.placeholder.com/1200x630?text=Real+Estate+Community">
+  <meta property="og:url" content="https://yourdomain.com">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+  <!-- Hero Section -->
+  <section class="bg-blue-600 text-white py-16 px-4 text-center">
+    <div class="max-w-4xl mx-auto">
+      <h1 class="text-4xl md:text-5xl font-bold mb-4">Join Our Real Estate Community</h1>
+      <p class="text-lg md:text-xl mb-6">Connect with wholesalers and investors, and get <span class="font-semibold">free resources</span> to start your real estate journey!</p>
+      <!-- Email Capture Form -->
+      <form action="https://formspree.io/f/your-form-id" method="POST" class="flex flex-col md:flex-row justify-center items-center gap-4">
+        <input type="email" name="email" placeholder="Enter your email" required class="w-full md:w-80 p-3 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-400">
+        <button type="submit" class="bg-yellow-400 text-gray-800 font-semibold py-3 px-6 rounded-lg hover:bg-yellow-500 transition">Get Free Resources</button>
+      </form>
+      <p class="text-sm mt-4">We respect your privacy. Unsubscribe anytime.</p>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section class="py-12 px-4 max-w-4xl mx-auto text-center">
+    <h2 class="text-3xl font-bold mb-6">Why Join Us?</h2>
+    <p class="text-lg mb-4">Our community is dedicated to helping wholesalers and investors like you connect, learn, and grow. I’m [Your Name], and I’ve been investing in real estate for [X years]. Join us to access exclusive trainings, network with top investors, and build wealth through real estate.</p>
+    <img src="https://via.placeholder.com/300?text=Your+Photo" alt="Your Photo" class="mx-auto rounded-full w-32 h-32 mt-6">
+  </section>
+
+  <!-- Resources Section -->
+  <section class="bg-white py-12 px-4">
+    <div class="max-w-4xl mx-auto text-center">
+      <h2 class="text-3xl font-bold mb-6">What You’ll Get</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="p-6 bg-gray-50 rounded-lg">
+          <h3 class="text-xl font-semibold mb-2">Free PDF Guide</h3>
+          <p>A step-by-step guide to wholesaling real estate.</p>
+        </div>
+        <div class="p-6 bg-gray-50 rounded-lg">
+          <h3 class="text-xl font-semibold mb-2">Video Training</h3>
+          <p>Learn insider tips from top investors.</p>
+        </div>
+        <div class="p-6 bg-gray-50 rounded-lg">
+          <h3 class="text-xl font-semibold mb-2">Community Access</h3>
+          <p>Connect with like-minded investors.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-gray-800 text-white py-6 px-4 text-center">
+    <p>&copy; 2025 [Your Brand Name]. All rights reserved.</p>
+    <p class="mt-2">Follow us on <a href="https://x.com/yourprofile" class="underline">X</a> | <a href="https://instagram.com/yourprofile" class="underline">Instagram</a></p>
+  </footer>
+</body>
+</html>
